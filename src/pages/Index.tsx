@@ -5,11 +5,11 @@ const HERO_IMAGE = "https://cdn.poehali.dev/projects/d2cbd6c5-ea14-4224-82f7-a50
 
 const updates = [
   {
-    date: "24 апр 2026",
-    tag: "ИВЕНТ",
-    title: "Апокалипсис наступает",
-    desc: "Зона поражения расширяется на восток. Новые мутанты, новые угрозы. Выживших единицы.",
-    icon: "Flame",
+    date: "29 апр 2026",
+    tag: "ОБНОВЛЕНИЕ",
+    title: "Машины, мини-карта и новые квесты",
+    desc: "Полностью обновлён автопарк, добавлена удобная мини-карта в HUD, появились свежие сюжетные квесты с уникальными наградами.",
+    icon: "Sparkles",
   },
   {
     date: "18 апр 2026",
@@ -569,9 +569,9 @@ export default function Index() {
           <FadeSection>
             <div className="mb-14 text-center">
               <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">04 / КОМАНДА</div>
-              <h2 className="font-heading text-5xl md:text-6xl font-bold text-[#e8e0d8] leading-tight">
-                СОЗДАТЕЛИ<br />
-                <span className="text-[#c0392b]">МИРА</span>
+              <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-[#e8e0d8] leading-tight">
+                ГЛАВНЫЕ ВЕРХОВНЫЕ<br />
+                <span className="text-[#c0392b]">СОЗДАТЕЛИ</span>
               </h2>
             </div>
           </FadeSection>
