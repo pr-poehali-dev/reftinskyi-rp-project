@@ -594,15 +594,26 @@ export default function Index() {
                     (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.04)";
                   }}
                 >
-                  <div
-                    className="w-24 h-24 rounded-full mx-auto mb-5 flex items-center justify-center font-heading text-3xl text-[#e0d8d0] font-bold"
-                    style={{
-                      background: `radial-gradient(circle, ${c.color}99 0%, ${c.color}44 100%)`,
-                      border: `1px solid ${c.color}88`,
-                      boxShadow: `0 0 30px ${c.color}66`,
-                    }}
-                  >
-                    {c.initials}
+                  <div className="relative w-24 h-24 mx-auto mb-5">
+                    <div
+                      className="absolute -top-7 left-1/2 -translate-x-1/2 z-10"
+                      style={{
+                        filter: "drop-shadow(0 0 8px rgba(255, 200, 50, 0.7)) drop-shadow(0 0 15px rgba(192, 57, 43, 0.5))",
+                        animation: "flicker 3s infinite",
+                      }}
+                    >
+                      <Icon name="Crown" size={32} className="text-[#FFD700]" />
+                    </div>
+                    <div
+                      className="w-24 h-24 rounded-full flex items-center justify-center font-heading text-3xl text-[#e0d8d0] font-bold relative"
+                      style={{
+                        background: `radial-gradient(circle, ${c.color}99 0%, ${c.color}44 100%)`,
+                        border: `2px solid #FFD70066`,
+                        boxShadow: `0 0 30px ${c.color}66, 0 0 20px rgba(255, 215, 0, 0.2)`,
+                      }}
+                    >
+                      {c.initials}
+                    </div>
                   </div>
                   <h3 className="font-heading text-2xl text-[#e0d8d0] mb-1 group-hover:text-[#c0392b] transition-colors tracking-wide">
                     {c.name}
