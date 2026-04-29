@@ -174,6 +174,7 @@ export default function Index() {
               ["#newmap", "ОБНОВЛЕНИЕ"],
               ["#updates", "ХРОНИКА"],
               ["#creators", "КОМАНДА"],
+              ["#admin", "АДМИН"],
               ["#rules", "ПРАВИЛА"],
               ["#faq", "FAQ"],
             ].map(([href, label]) => (
@@ -629,6 +630,147 @@ export default function Index() {
 
       <div className="section-divider mx-12" />
 
+      {/* HEAD ADMIN */}
+      <section id="admin" className="py-24 px-6 relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{
+            background: "radial-gradient(ellipse at center, rgba(139,0,0,0.12) 0%, transparent 60%)",
+          }}
+        />
+        <div
+          className="absolute inset-0 pointer-events-none opacity-30"
+          style={{
+            backgroundImage: "repeating-linear-gradient(45deg, transparent 0, transparent 60px, rgba(139,0,0,0.04) 60px, rgba(139,0,0,0.04) 61px)",
+          }}
+        />
+
+        <div className="max-w-3xl mx-auto relative z-10">
+          <FadeSection>
+            <div className="mb-12 text-center">
+              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">05 / ВЛАСТЬ</div>
+              <h2 className="font-heading text-4xl md:text-5xl lg:text-6xl font-bold text-[#e8e0d8] leading-tight">
+                ГЛАВНЫЙ<br />
+                <span className="text-[#c0392b]">АДМИНИСТРАТОР</span>
+              </h2>
+            </div>
+          </FadeSection>
+
+          <FadeSection delay={150}>
+            <div
+              className="relative p-10 md:p-14 text-center overflow-hidden"
+              style={{
+                background: "linear-gradient(135deg, #0f0a0a 0%, #0a0505 100%)",
+                border: "1px solid rgba(139, 0, 0, 0.4)",
+                boxShadow: "0 0 60px rgba(139, 0, 0, 0.15), inset 0 0 60px rgba(0,0,0,0.5)",
+              }}
+            >
+              {/* Декоративные углы */}
+              {[
+                "top-3 left-3 border-t border-l",
+                "top-3 right-3 border-t border-r",
+                "bottom-3 left-3 border-b border-l",
+                "bottom-3 right-3 border-b border-r",
+              ].map((pos, i) => (
+                <div
+                  key={i}
+                  className={`absolute ${pos} w-6 h-6`}
+                  style={{ borderColor: "rgba(255, 215, 0, 0.5)" }}
+                />
+              ))}
+
+              {/* Корона большая сверху */}
+              <div
+                className="relative inline-block mb-2"
+                style={{
+                  filter: "drop-shadow(0 0 15px rgba(255, 200, 50, 0.9)) drop-shadow(0 0 30px rgba(192, 57, 43, 0.6))",
+                  animation: "flicker 3s infinite",
+                }}
+              >
+                <Icon name="Crown" size={56} className="text-[#FFD700]" />
+              </div>
+
+              {/* Аватар */}
+              <div className="relative w-32 h-32 mx-auto mb-6">
+                <div
+                  className="absolute inset-0 rounded-full animate-spin"
+                  style={{
+                    background: "conic-gradient(from 0deg, #FFD700, #c0392b, #FFD700, #8B0000, #FFD700)",
+                    animationDuration: "8s",
+                    padding: "3px",
+                  }}
+                >
+                  <div
+                    className="w-full h-full rounded-full flex items-center justify-center font-heading text-4xl text-[#FFD700] font-bold"
+                    style={{
+                      background: "radial-gradient(circle, #1a0a0a 0%, #0a0505 100%)",
+                      boxShadow: "inset 0 0 30px rgba(139, 0, 0, 0.6), 0 0 40px rgba(255, 215, 0, 0.3)",
+                    }}
+                  >
+                    MC
+                  </div>
+                </div>
+              </div>
+
+              {/* Бейдж */}
+              <div
+                className="inline-flex items-center gap-2 px-4 py-1 mb-4"
+                style={{
+                  background: "linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(139, 0, 0, 0.15))",
+                  border: "1px solid rgba(255, 215, 0, 0.4)",
+                }}
+              >
+                <Icon name="Shield" size={12} className="text-[#FFD700]" />
+                <span className="font-heading text-[10px] tracking-[0.3em] text-[#FFD700]">
+                  ГОЛОВА ПРОЕКТА
+                </span>
+              </div>
+
+              <h3
+                className="font-heading text-4xl md:text-5xl text-[#e8e0d8] mb-2 tracking-wide"
+                style={{
+                  textShadow: "0 0 20px rgba(255, 215, 0, 0.4), 0 0 40px rgba(192, 57, 43, 0.3)",
+                }}
+              >
+                Mr_Crown
+              </h3>
+              <div className="font-heading text-sm tracking-[0.3em] text-[#FFD700] mb-6">
+                ГЛАВНЫЙ АДМИНИСТРАТОР
+              </div>
+
+              <p className="font-body text-base text-[#a09080] leading-relaxed max-w-lg mx-auto mb-8 italic">
+                Хранитель порядка Рефтинского. Последнее слово в любых спорах,
+                рука закона на этих улицах. Его решения — окончательны.
+              </p>
+
+              <div className="grid grid-cols-3 gap-4 max-w-md mx-auto">
+                {[
+                  { val: "∞", label: "полномочия" },
+                  { val: "24/7", label: "на связи" },
+                  { val: "1", label: "слово" },
+                ].map(({ val, label }) => (
+                  <div
+                    key={label}
+                    className="p-3"
+                    style={{
+                      background: "rgba(0,0,0,0.3)",
+                      border: "1px solid rgba(255, 215, 0, 0.15)",
+                    }}
+                  >
+                    <div className="font-heading text-2xl text-[#FFD700]">{val}</div>
+                    <div className="font-body text-[10px] text-[#7a7068] tracking-widest uppercase">
+                      {label}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </FadeSection>
+        </div>
+      </section>
+
+      <div className="section-divider mx-12" />
+
       {/* RULES */}
       <section id="rules" className="py-24 px-6 relative">
         <div
@@ -638,7 +780,7 @@ export default function Index() {
         <div className="max-w-5xl mx-auto relative z-10">
           <FadeSection>
             <div className="mb-14 text-center">
-              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">05 / ЗАКОН</div>
+              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">06 / ЗАКОН</div>
               <h2 className="font-heading text-5xl md:text-6xl font-bold text-[#e8e0d8] leading-tight mb-4">
                 ПРАВИЛА<br />
                 <span className="text-[#c0392b]">ПРОЕКТА</span>
@@ -791,7 +933,7 @@ export default function Index() {
         <div className="max-w-3xl mx-auto">
           <FadeSection>
             <div className="mb-14 text-center">
-              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">06 / ВОПРОСЫ</div>
+              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">07 / ВОПРОСЫ</div>
               <h2 className="font-heading text-5xl md:text-6xl font-bold text-[#e8e0d8] leading-tight">
                 ЧАСТО<br />
                 <span className="text-[#c0392b]">СПРАШИВАЮТ</span>
