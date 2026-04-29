@@ -170,9 +170,10 @@ export default function Index() {
           </span>
           <div className="hidden md:flex items-center gap-8">
             {[
-              ["#about", "О СЕРВЕРЕ"],
-              ["#updates", "ОБНОВЛЕНИЯ"],
-              ["#creators", "СОЗДАТЕЛИ"],
+              ["#about", "О ИГРЕ"],
+              ["#newmap", "ОБНОВЛЕНИЕ"],
+              ["#updates", "ХРОНИКА"],
+              ["#creators", "КОМАНДА"],
               ["#rules", "ПРАВИЛА"],
               ["#faq", "FAQ"],
             ].map(([href, label]) => (
@@ -342,13 +343,154 @@ export default function Index() {
 
       <div className="section-divider mx-12" />
 
+      {/* NEW MAP */}
+      <section id="newmap" className="py-24 px-6 relative overflow-hidden">
+        <div
+          className="absolute inset-0 pointer-events-none"
+          style={{ background: "radial-gradient(ellipse at 80% 20%, rgba(139,0,0,0.08) 0%, transparent 60%)" }}
+        />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <FadeSection>
+            <div className="mb-14 text-center">
+              <div className="inline-flex items-center gap-3 mb-4">
+                <span
+                  className="font-heading text-[10px] tracking-widest px-3 py-1 animate-pulse"
+                  style={{
+                    background: "rgba(139,0,0,0.25)",
+                    color: "#ff6b6b",
+                    border: "1px solid rgba(139,0,0,0.5)",
+                    boxShadow: "0 0 15px rgba(139,0,0,0.3)",
+                  }}
+                >
+                  ● СКОРО
+                </span>
+                <span className="font-heading text-xs tracking-[0.4em] text-[#8B0000]">02 / ОБНОВЛЕНИЕ</span>
+              </div>
+              <h2 className="font-heading text-5xl md:text-7xl font-bold text-[#e8e0d8] leading-tight mb-4">
+                ГРЯДЁТ<br />
+                <span className="text-[#c0392b] blood-glow">НОВАЯ ЭПОХА</span>
+              </h2>
+              <p className="font-body text-base text-[#a09080] max-w-2xl mx-auto leading-relaxed italic">
+                Мир Рефтинского переписывается с нуля. Новая карта, новый движок,
+                новые возможности. Готовься — старая жизнь закончилась.
+              </p>
+            </div>
+          </FadeSection>
+
+          <div className="grid md:grid-cols-3 gap-4">
+            {[
+              {
+                icon: "LayoutDashboard",
+                title: "НОВЫЕ GUI",
+                desc: "Полностью переработанный интерфейс. Удобнее, быстрее, атмосфернее. Каждый элемент управления продуман до мелочей.",
+                num: "01",
+              },
+              {
+                icon: "Sparkles",
+                title: "НОВАЯ ГРАФИКА",
+                desc: "Обновлённая визуальная составляющая: освещение, тени, текстуры. Город ожил в новом свете и стал по-настоящему мрачным.",
+                num: "02",
+              },
+              {
+                icon: "Zap",
+                title: "НОВАЯ ОПТИМИЗАЦИЯ",
+                desc: "Стабильный FPS даже на слабых ПК. Серверный лаг сведён к минимуму. Играй без задержек и просадок.",
+                num: "03",
+              },
+              {
+                icon: "Car",
+                title: "НОВЫЕ МАШИНЫ",
+                desc: "Полностью свежий автопарк: от потрёпанных жигулей до бронированных внедорожников. Каждая со своим характером и звуком.",
+                num: "04",
+              },
+              {
+                icon: "Map",
+                title: "НОВАЯ КАРТА",
+                desc: "Огромный город с заброшенными районами, промзонами, тёмными переулками и тайными убежищами. Каждый угол хранит историю.",
+                num: "05",
+              },
+              {
+                icon: "Users",
+                title: "НОВЫЕ РАЗРАБОТЧИКИ",
+                desc: "В команду пришли опытные ребята. Больше идей, быстрее обновления, выше качество. Проект выходит на новый уровень.",
+                num: "06",
+              },
+            ].map((f, i) => (
+              <FadeSection key={i} delay={i * 100}>
+                <div
+                  className="group relative p-7 h-full transition-all duration-500"
+                  style={{
+                    background: "linear-gradient(135deg, #111111 0%, #0a0a0a 100%)",
+                    border: "1px solid rgba(255,255,255,0.04)",
+                  }}
+                  onMouseEnter={e => {
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(139,0,0,0.5)";
+                    (e.currentTarget as HTMLElement).style.boxShadow = "0 0 40px rgba(139,0,0,0.15)";
+                    (e.currentTarget as HTMLElement).style.transform = "translateY(-4px)";
+                  }}
+                  onMouseLeave={e => {
+                    (e.currentTarget as HTMLElement).style.borderColor = "rgba(255,255,255,0.04)";
+                    (e.currentTarget as HTMLElement).style.boxShadow = "none";
+                    (e.currentTarget as HTMLElement).style.transform = "translateY(0)";
+                  }}
+                >
+                  <div className="flex items-start justify-between mb-5">
+                    <div
+                      className="w-12 h-12 flex items-center justify-center"
+                      style={{
+                        background: "rgba(139,0,0,0.15)",
+                        border: "1px solid rgba(139,0,0,0.35)",
+                      }}
+                    >
+                      <Icon name={f.icon as "Map"} size={20} className="text-[#c0392b]" />
+                    </div>
+                    <span className="font-heading text-3xl text-[#1a1a1a] group-hover:text-[#8B0000] transition-colors duration-500">
+                      {f.num}
+                    </span>
+                  </div>
+                  <h3 className="font-heading text-lg tracking-wider text-[#e0d8d0] mb-3 group-hover:text-[#c0392b] transition-colors">
+                    {f.title}
+                  </h3>
+                  <p className="font-body text-sm text-[#7a7068] leading-relaxed">
+                    {f.desc}
+                  </p>
+                  <div
+                    className="absolute bottom-0 left-0 h-px bg-gradient-to-r from-[#8B0000] to-transparent transition-all duration-700"
+                    style={{ width: "0%" }}
+                  />
+                </div>
+              </FadeSection>
+            ))}
+          </div>
+
+          <FadeSection delay={300}>
+            <div className="mt-12 text-center">
+              <div
+                className="inline-flex items-center gap-4 px-8 py-4"
+                style={{
+                  background: "linear-gradient(135deg, rgba(139,0,0,0.15), rgba(139,0,0,0.05))",
+                  border: "1px solid rgba(139,0,0,0.3)",
+                }}
+              >
+                <Icon name="Clock" size={18} className="text-[#c0392b]" />
+                <span className="font-heading text-sm tracking-widest text-[#e0d8d0]">
+                  ОЖИДАЕМЫЙ РЕЛИЗ — ЛЕТО 2026
+                </span>
+              </div>
+            </div>
+          </FadeSection>
+        </div>
+      </section>
+
+      <div className="section-divider mx-12" />
+
       {/* UPDATES */}
       <section id="updates" className="py-24 px-6 relative">
         <div className="max-w-6xl mx-auto">
           <FadeSection>
             <div className="mb-14 flex items-end justify-between flex-wrap gap-4">
               <div>
-                <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">02 / ХРОНИКА</div>
+                <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">03 / ХРОНИКА</div>
                 <h2 className="font-heading text-5xl md:text-6xl font-bold text-[#e8e0d8] leading-tight">
                   ПОСЛЕДНИЕ<br />
                   <span className="text-[#c0392b]">СОБЫТИЯ</span>
@@ -426,7 +568,7 @@ export default function Index() {
         <div className="max-w-6xl mx-auto relative z-10">
           <FadeSection>
             <div className="mb-14 text-center">
-              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">03 / КОМАНДА</div>
+              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">04 / КОМАНДА</div>
               <h2 className="font-heading text-5xl md:text-6xl font-bold text-[#e8e0d8] leading-tight">
                 СОЗДАТЕЛИ<br />
                 <span className="text-[#c0392b]">МИРА</span>
@@ -485,7 +627,7 @@ export default function Index() {
         <div className="max-w-5xl mx-auto relative z-10">
           <FadeSection>
             <div className="mb-14 text-center">
-              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">04 / ЗАКОН</div>
+              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">05 / ЗАКОН</div>
               <h2 className="font-heading text-5xl md:text-6xl font-bold text-[#e8e0d8] leading-tight mb-4">
                 ПРАВИЛА<br />
                 <span className="text-[#c0392b]">ПРОЕКТА</span>
@@ -638,7 +780,7 @@ export default function Index() {
         <div className="max-w-3xl mx-auto">
           <FadeSection>
             <div className="mb-14 text-center">
-              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">05 / ВОПРОСЫ</div>
+              <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">06 / ВОПРОСЫ</div>
               <h2 className="font-heading text-5xl md:text-6xl font-bold text-[#e8e0d8] leading-tight">
                 ЧАСТО<br />
                 <span className="text-[#c0392b]">СПРАШИВАЮТ</span>
