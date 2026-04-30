@@ -3,8 +3,18 @@ import Icon from "@/components/ui/icon";
 
 const HERO_IMAGE = "https://cdn.poehali.dev/projects/d2cbd6c5-ea14-4224-82f7-a50b311f182d/files/6bbfbc69-c0ce-4668-a5d3-9cd8b5ad20f4.jpg";
 
-const updates = [
+type UpdateItem = {
+  id: number;
+  date: string;
+  tag: string;
+  title: string;
+  desc: string;
+  icon: string;
+};
+
+const defaultUpdates: UpdateItem[] = [
   {
+    id: 1,
     date: "29 апр 2026",
     tag: "ОБНОВЛЕНИЕ",
     title: "Машины, мини-карта и новые квесты",
@@ -12,6 +22,7 @@ const updates = [
     icon: "Sparkles",
   },
   {
+    id: 2,
     date: "18 апр 2026",
     tag: "ОБНОВЛЕНИЕ",
     title: "Патч 4.7 — Тёмные улицы",
@@ -19,6 +30,7 @@ const updates = [
     icon: "Wrench",
   },
   {
+    id: 3,
     date: "10 апр 2026",
     tag: "ОБНОВЛЕНИЕ",
     title: "Новая карта: Промзона",
@@ -26,6 +38,7 @@ const updates = [
     icon: "Map",
   },
   {
+    id: 4,
     date: "01 апр 2026",
     tag: "ИВЕНТ",
     title: "Ночь живых мертвецов",
@@ -155,6 +168,15 @@ export default function Index() {
   const [videos, setVideos] = useState<{ id: number; title: string; url: string }[]>([]);
   const [videoTitle, setVideoTitle] = useState("");
   const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [updates, setUpdates] = useState<UpdateItem[]>(defaultUpdates);
+  const [updForm, setUpdForm] = useState<Omit<UpdateItem, "id">>({
+    date: "",
+    tag: "ОБНОВЛЕНИЕ",
+    title: "",
+    desc: "",
+    icon: "Sparkles",
+  });
+  const [editingUpdId, setEditingUpdId] = useState<number | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
@@ -173,7 +195,42 @@ export default function Index() {
     if (saved) {
       try { setVideos(JSON.parse(saved)); } catch { /* ignore */ }
     }
+    const savedUpd = localStorage.getItem("updates");
+    if (savedUpd) {
+      try { setUpdates(JSON.parse(savedUpd)); } catch { /* ignore */ }
+    }
   }, []);
+
+  const saveUpdates = (next: UpdateItem[]) => {
+    setUpdates(next);
+    localStorage.setItem("updates", JSON.stringify(next));
+  };
+
+  const handleUpdSubmit = () => {
+    if (!updForm.date || !updForm.title || !updForm.desc) return;
+    if (editingUpdId !== null) {
+      saveUpdates(updates.map(u => u.id === editingUpdId ? { ...updForm, id: editingUpdId } : u));
+      setEditingUpdId(null);
+    } else {
+      saveUpdates([{ ...updForm, id: Date.now() }, ...updates]);
+    }
+    setUpdForm({ date: "", tag: "ОБНОВЛЕНИЕ", title: "", desc: "", icon: "Sparkles" });
+  };
+
+  const handleUpdEdit = (u: UpdateItem) => {
+    setEditingUpdId(u.id);
+    setUpdForm({ date: u.date, tag: u.tag, title: u.title, desc: u.desc, icon: u.icon });
+  };
+
+  const handleUpdDelete = (id: number) => {
+    saveUpdates(updates.filter(u => u.id !== id));
+  };
+
+  const handleUpdReset = () => {
+    saveUpdates(defaultUpdates);
+    setEditingUpdId(null);
+    setUpdForm({ date: "", tag: "ОБНОВЛЕНИЕ", title: "", desc: "", icon: "Sparkles" });
+  };
 
   const handleAdminLogin = () => {
     if (adminInput === ADMIN_PASSWORD) {
@@ -1130,6 +1187,149 @@ export default function Index() {
                 </button>
               </div>
 
+              {/* УПРАВЛЕНИЕ ОБНОВЛЕНИЯМИ */}
+              <div
+                className="p-8 mb-8"
+                style={{
+                  background: "linear-gradient(135deg, #0f0a0a 0%, #0a0505 100%)",
+                  border: "1px solid rgba(192, 57, 43, 0.3)",
+                }}
+              >
+                <div className="flex items-center justify-between mb-4">
+                  <h4 className="font-heading text-lg text-[#c0392b] flex items-center gap-2">
+                    <Icon name="Newspaper" size={18} />
+                    {editingUpdId !== null ? "Редактирование обновления" : "Новое обновление"}
+                  </h4>
+                  <button
+                    onClick={handleUpdReset}
+                    className="font-heading text-[10px] tracking-widest text-[#5a5048] hover:text-[#c0392b] transition-colors"
+                    title="Сбросить к стандартным"
+                  >
+                    СБРОС К ИСХОДНЫМ
+                  </button>
+                </div>
+
+                <div className="grid md:grid-cols-2 gap-3 mb-3">
+                  <input
+                    type="text"
+                    value={updForm.date}
+                    onChange={(e) => setUpdForm({ ...updForm, date: e.target.value })}
+                    placeholder="Дата (например: 30 апр 2026)"
+                    className="bg-[#0a0505] border border-[#2a1a1a] px-4 py-2 text-[#e0d8d0] font-body text-sm focus:outline-none focus:border-[#c0392b]"
+                  />
+                  <select
+                    value={updForm.tag}
+                    onChange={(e) => setUpdForm({ ...updForm, tag: e.target.value })}
+                    className="bg-[#0a0505] border border-[#2a1a1a] px-4 py-2 text-[#e0d8d0] font-body text-sm focus:outline-none focus:border-[#c0392b]"
+                  >
+                    <option value="ОБНОВЛЕНИЕ">ОБНОВЛЕНИЕ</option>
+                    <option value="ИВЕНТ">ИВЕНТ</option>
+                    <option value="ПАТЧ">ПАТЧ</option>
+                    <option value="ВАЖНО">ВАЖНО</option>
+                    <option value="НОВОСТЬ">НОВОСТЬ</option>
+                  </select>
+                </div>
+                <input
+                  type="text"
+                  value={updForm.title}
+                  onChange={(e) => setUpdForm({ ...updForm, title: e.target.value })}
+                  placeholder="Заголовок обновления"
+                  className="w-full bg-[#0a0505] border border-[#2a1a1a] px-4 py-2 mb-3 text-[#e0d8d0] font-body text-sm focus:outline-none focus:border-[#c0392b]"
+                />
+                <textarea
+                  value={updForm.desc}
+                  onChange={(e) => setUpdForm({ ...updForm, desc: e.target.value })}
+                  placeholder="Описание"
+                  rows={3}
+                  className="w-full bg-[#0a0505] border border-[#2a1a1a] px-4 py-2 mb-3 text-[#e0d8d0] font-body text-sm focus:outline-none focus:border-[#c0392b] resize-none"
+                />
+                <div className="grid md:grid-cols-2 gap-3 mb-4">
+                  <select
+                    value={updForm.icon}
+                    onChange={(e) => setUpdForm({ ...updForm, icon: e.target.value })}
+                    className="bg-[#0a0505] border border-[#2a1a1a] px-4 py-2 text-[#e0d8d0] font-body text-sm focus:outline-none focus:border-[#c0392b]"
+                  >
+                    <option value="Sparkles">✨ Sparkles</option>
+                    <option value="Wrench">🔧 Wrench</option>
+                    <option value="Map">🗺️ Map</option>
+                    <option value="Skull">💀 Skull</option>
+                    <option value="Flame">🔥 Flame</option>
+                    <option value="Star">⭐ Star</option>
+                    <option value="Bell">🔔 Bell</option>
+                    <option value="Zap">⚡ Zap</option>
+                    <option value="Shield">🛡️ Shield</option>
+                    <option value="Trophy">🏆 Trophy</option>
+                  </select>
+                  <div className="flex items-center gap-2 px-4 py-2 border border-[#2a1a1a] bg-[#0a0505]">
+                    <Icon name={updForm.icon as "Sparkles"} size={18} className="text-[#c0392b]" />
+                    <span className="font-body text-xs text-[#7a7068]">предпросмотр иконки</span>
+                  </div>
+                </div>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleUpdSubmit}
+                    disabled={!updForm.date || !updForm.title || !updForm.desc}
+                    className="font-heading text-xs tracking-widest px-5 py-2 border border-[#c0392b] text-[#c0392b] hover:bg-[#c0392b] hover:text-[#0a0505] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    {editingUpdId !== null ? "СОХРАНИТЬ" : "ОПУБЛИКОВАТЬ"}
+                  </button>
+                  {editingUpdId !== null && (
+                    <button
+                      onClick={() => {
+                        setEditingUpdId(null);
+                        setUpdForm({ date: "", tag: "ОБНОВЛЕНИЕ", title: "", desc: "", icon: "Sparkles" });
+                      }}
+                      className="font-heading text-xs tracking-widest px-5 py-2 border border-[#3a3a3a] text-[#a09080] hover:border-[#c0392b] transition-all"
+                    >
+                      ОТМЕНА
+                    </button>
+                  )}
+                </div>
+
+                {updates.length > 0 && (
+                  <div className="mt-6 pt-6 border-t border-[#2a1a1a]">
+                    <div className="font-heading text-xs tracking-widest text-[#7a7068] mb-3">
+                      ОПУБЛИКОВАНО ({updates.length})
+                    </div>
+                    <div className="space-y-2">
+                      {updates.map((u) => (
+                        <div
+                          key={u.id}
+                          className="flex items-center justify-between gap-3 p-3 border border-[#1a1010] bg-[#080404]"
+                        >
+                          <div className="flex items-center gap-3 min-w-0">
+                            <Icon name={u.icon as "Sparkles"} size={16} className="text-[#c0392b] shrink-0" />
+                            <div className="min-w-0">
+                              <div className="font-heading text-sm text-[#e0d8d0] truncate">{u.title}</div>
+                              <div className="font-body text-[10px] text-[#5a5048] tracking-widest">
+                                {u.date} · {u.tag}
+                              </div>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-2 shrink-0">
+                            <button
+                              onClick={() => handleUpdEdit(u)}
+                              className="text-[#7a7068] hover:text-[#FFD700] transition-colors"
+                              title="Редактировать"
+                            >
+                              <Icon name="Pencil" size={16} />
+                            </button>
+                            <button
+                              onClick={() => handleUpdDelete(u.id)}
+                              className="text-[#7a7068] hover:text-[#c0392b] transition-colors"
+                              title="Удалить"
+                            >
+                              <Icon name="Trash2" size={16} />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ЗАГРУЗКА ВИДЕО */}
               <div
                 className="p-8 mb-8"
                 style={{
