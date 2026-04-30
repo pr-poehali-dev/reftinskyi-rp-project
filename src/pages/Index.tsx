@@ -142,15 +142,70 @@ function FadeSection({ children, delay = 0 }: { children: React.ReactNode; delay
   );
 }
 
+const ADMIN_PASSWORD = "crown";
+const DISCORD_URL = "https://discord.gg/3NtM3N5b";
+
 export default function Index() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [scrollY, setScrollY] = useState(0);
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [adminInput, setAdminInput] = useState("");
+  const [adminError, setAdminError] = useState("");
+  const [videos, setVideos] = useState<{ id: number; title: string; url: string }[]>([]);
+  const [videoTitle, setVideoTitle] = useState("");
+  const [videoFile, setVideoFile] = useState<File | null>(null);
 
   useEffect(() => {
     const onScroll = () => setScrollY(window.scrollY);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    const seen = sessionStorage.getItem("welcomed");
+    if (!seen) {
+      setShowWelcome(true);
+      sessionStorage.setItem("welcomed", "1");
+    }
+    if (localStorage.getItem("isAdmin") === "1") setIsAdmin(true);
+    const saved = localStorage.getItem("videos");
+    if (saved) {
+      try { setVideos(JSON.parse(saved)); } catch { /* ignore */ }
+    }
+  }, []);
+
+  const handleAdminLogin = () => {
+    if (adminInput === ADMIN_PASSWORD) {
+      setIsAdmin(true);
+      localStorage.setItem("isAdmin", "1");
+      setAdminError("");
+      setAdminInput("");
+    } else {
+      setAdminError("Неверный пароль");
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdmin(false);
+    localStorage.removeItem("isAdmin");
+  };
+
+  const handleVideoUpload = () => {
+    if (!videoFile || !videoTitle) return;
+    const url = URL.createObjectURL(videoFile);
+    const next = [...videos, { id: Date.now(), title: videoTitle, url }];
+    setVideos(next);
+    localStorage.setItem("videos", JSON.stringify(next.map(v => ({ ...v }))));
+    setVideoTitle("");
+    setVideoFile(null);
+  };
+
+  const handleVideoDelete = (id: number) => {
+    const next = videos.filter(v => v.id !== id);
+    setVideos(next);
+    localStorage.setItem("videos", JSON.stringify(next));
+  };
 
   return (
     <div className="min-h-screen bg-[#0a0a0a] text-[#e0d8d0] scanlines overflow-x-hidden">
@@ -187,13 +242,25 @@ export default function Index() {
               </a>
             ))}
           </div>
-          <a
-            href="#"
-            className="font-heading text-sm tracking-widest px-5 py-2 text-[#e0d8d0] border border-[#8B0000] hover:bg-[#8B0000] transition-all duration-300"
-            style={{ boxShadow: "0 0 10px rgba(139,0,0,0.3)" }}
-          >
-            ИГРАТЬ
-          </a>
+          <div className="flex items-center gap-3">
+            <a
+              href={DISCORD_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:inline-flex font-heading text-sm tracking-widest px-4 py-2 text-[#e0d8d0] border border-[#5865F2] hover:bg-[#5865F2] transition-all duration-300 items-center gap-2"
+              style={{ boxShadow: "0 0 10px rgba(88,101,242,0.3)" }}
+            >
+              <Icon name="MessageCircle" size={14} />
+              DISCORD
+            </a>
+            <a
+              href="#"
+              className="font-heading text-sm tracking-widest px-5 py-2 text-[#e0d8d0] border border-[#8B0000] hover:bg-[#8B0000] transition-all duration-300"
+              style={{ boxShadow: "0 0 10px rgba(139,0,0,0.3)" }}
+            >
+              ИГРАТЬ
+            </a>
+          </div>
         </div>
       </nav>
 
@@ -992,13 +1059,15 @@ export default function Index() {
           </div>
           <div className="flex items-center gap-6">
             {[
-              { icon: "MessageCircle", label: "Discord" },
-              { icon: "Send", label: "Telegram" },
-              { icon: "Monitor", label: "VK" },
-            ].map(({ icon, label }) => (
+              { icon: "MessageCircle", label: "Discord", href: DISCORD_URL },
+              { icon: "Send", label: "Telegram", href: "#" },
+              { icon: "Monitor", label: "VK", href: "#" },
+            ].map(({ icon, label, href }) => (
               <a
                 key={label}
-                href="#"
+                href={href}
+                target={href.startsWith("http") ? "_blank" : undefined}
+                rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
                 className="group flex items-center gap-2 text-[#4a4640] hover:text-[#c0392b] transition-colors duration-300"
               >
                 <Icon name={icon as "MessageCircle"} size={16} />
@@ -1011,6 +1080,208 @@ export default function Index() {
           </div>
         </div>
       </footer>
+
+      {/* ADMIN PANEL — внизу сайта, доступ только по паролю */}
+      <section id="admin-panel" className="py-20 px-6 relative border-t border-[#1a0a0a]">
+        <div className="max-w-4xl mx-auto">
+          {!isAdmin ? (
+            <div className="text-center">
+              <div className="font-heading text-xs tracking-[0.4em] text-[#3a3a3a] mb-3">
+                СЛУЖЕБНЫЙ ВХОД
+              </div>
+              <h3 className="font-heading text-2xl text-[#5a5048] mb-6">Зона администрации</h3>
+              <div className="flex items-center justify-center gap-2 max-w-sm mx-auto">
+                <input
+                  type="password"
+                  value={adminInput}
+                  onChange={(e) => setAdminInput(e.target.value)}
+                  onKeyDown={(e) => e.key === "Enter" && handleAdminLogin()}
+                  placeholder="Пароль"
+                  className="flex-1 bg-[#0f0a0a] border border-[#2a1a1a] px-4 py-2 text-[#e0d8d0] font-body text-sm focus:outline-none focus:border-[#8B0000]"
+                />
+                <button
+                  onClick={handleAdminLogin}
+                  className="font-heading text-xs tracking-widest px-4 py-2 border border-[#8B0000] text-[#e0d8d0] hover:bg-[#8B0000] transition-all"
+                >
+                  ВОЙТИ
+                </button>
+              </div>
+              {adminError && (
+                <div className="mt-3 font-body text-xs text-[#c0392b]">{adminError}</div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center justify-between mb-8">
+                <div>
+                  <div className="font-heading text-xs tracking-[0.4em] text-[#FFD700] mb-2">
+                    АДМИН-ПАНЕЛЬ
+                  </div>
+                  <h3 className="font-heading text-3xl text-[#e8e0d8] flex items-center gap-3">
+                    <Icon name="Crown" size={28} className="text-[#FFD700]" />
+                    Панель Mr_Crown
+                  </h3>
+                </div>
+                <button
+                  onClick={handleAdminLogout}
+                  className="font-heading text-xs tracking-widest px-4 py-2 border border-[#3a3a3a] text-[#a09080] hover:border-[#c0392b] hover:text-[#c0392b] transition-all"
+                >
+                  ВЫЙТИ
+                </button>
+              </div>
+
+              <div
+                className="p-8 mb-8"
+                style={{
+                  background: "linear-gradient(135deg, #0f0a0a 0%, #0a0505 100%)",
+                  border: "1px solid rgba(255, 215, 0, 0.2)",
+                }}
+              >
+                <h4 className="font-heading text-lg text-[#FFD700] mb-4 flex items-center gap-2">
+                  <Icon name="Upload" size={18} />
+                  Загрузка видео
+                </h4>
+                <div className="space-y-3">
+                  <input
+                    type="text"
+                    value={videoTitle}
+                    onChange={(e) => setVideoTitle(e.target.value)}
+                    placeholder="Название видео"
+                    className="w-full bg-[#0a0505] border border-[#2a1a1a] px-4 py-2 text-[#e0d8d0] font-body text-sm focus:outline-none focus:border-[#FFD700]"
+                  />
+                  <input
+                    type="file"
+                    accept="video/*"
+                    onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+                    className="w-full bg-[#0a0505] border border-[#2a1a1a] px-4 py-2 text-[#a09080] font-body text-sm file:mr-4 file:py-1 file:px-3 file:border-0 file:bg-[#8B0000] file:text-[#e0d8d0] file:font-heading file:text-xs file:tracking-widest hover:file:bg-[#c0392b]"
+                  />
+                  <button
+                    onClick={handleVideoUpload}
+                    disabled={!videoFile || !videoTitle}
+                    className="font-heading text-xs tracking-widest px-5 py-2 border border-[#FFD700] text-[#FFD700] hover:bg-[#FFD700] hover:text-[#0a0505] transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                  >
+                    ЗАГРУЗИТЬ
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="font-heading text-lg text-[#e8e0d8] mb-4">
+                  Загруженные видео ({videos.length})
+                </h4>
+                {videos.length === 0 ? (
+                  <div className="font-body text-sm text-[#5a5048] italic">
+                    Пока ничего не загружено
+                  </div>
+                ) : (
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {videos.map((v) => (
+                      <div
+                        key={v.id}
+                        className="p-4 border border-[#2a1a1a] bg-[#0f0a0a]"
+                      >
+                        <video src={v.url} controls className="w-full mb-3" />
+                        <div className="flex items-center justify-between">
+                          <div className="font-heading text-sm text-[#e0d8d0] truncate">
+                            {v.title}
+                          </div>
+                          <button
+                            onClick={() => handleVideoDelete(v.id)}
+                            className="text-[#7a7068] hover:text-[#c0392b] transition-colors"
+                          >
+                            <Icon name="Trash2" size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* WELCOME MODAL */}
+      {showWelcome && (
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center p-6"
+          style={{
+            background: "rgba(0,0,0,0.85)",
+            backdropFilter: "blur(8px)",
+            animation: "fadeIn 0.4s ease",
+          }}
+          onClick={() => setShowWelcome(false)}
+        >
+          <div
+            className="relative max-w-lg w-full p-10 text-center"
+            style={{
+              background: "linear-gradient(135deg, #0f0a0a 0%, #0a0505 100%)",
+              border: "1px solid rgba(139, 0, 0, 0.5)",
+              boxShadow: "0 0 80px rgba(139, 0, 0, 0.3)",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {[
+              "top-2 left-2 border-t border-l",
+              "top-2 right-2 border-t border-r",
+              "bottom-2 left-2 border-b border-l",
+              "bottom-2 right-2 border-b border-r",
+            ].map((p, i) => (
+              <div
+                key={i}
+                className={`absolute ${p} w-5 h-5`}
+                style={{ borderColor: "rgba(192, 57, 43, 0.6)" }}
+              />
+            ))}
+
+            <button
+              onClick={() => setShowWelcome(false)}
+              className="absolute top-3 right-3 text-[#5a5048] hover:text-[#c0392b] transition-colors"
+            >
+              <Icon name="X" size={20} />
+            </button>
+
+            <div
+              className="inline-block mb-4"
+              style={{ filter: "drop-shadow(0 0 20px rgba(192, 57, 43, 0.7))" }}
+            >
+              <Icon name="Skull" size={48} className="text-[#c0392b]" />
+            </div>
+
+            <div className="font-heading text-xs tracking-[0.4em] text-[#8B0000] mb-3">
+              ДОБРО ПОЖАЛОВАТЬ
+            </div>
+            <h2 className="font-heading text-3xl md:text-4xl text-[#e8e0d8] mb-4 leading-tight">
+              ПРИВЕТСТВУЕМ В<br />
+              <span className="text-[#c0392b] blood-glow">РЕФТИНСКОМ РП</span>
+            </h2>
+            <p className="font-body text-sm text-[#a09080] leading-relaxed mb-6">
+              Тёмные улицы ждут тебя. Заходи в Discord, знакомься с правилами
+              и погружайся в атмосферу настоящего ролевого мира.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <a
+                href={DISCORD_URL}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-heading text-sm tracking-widest px-6 py-3 border border-[#5865F2] text-[#e0d8d0] hover:bg-[#5865F2] transition-all duration-300 flex items-center justify-center gap-2"
+                style={{ boxShadow: "0 0 15px rgba(88,101,242,0.3)" }}
+              >
+                <Icon name="MessageCircle" size={16} />
+                ВСТУПИТЬ В DISCORD
+              </a>
+              <button
+                onClick={() => setShowWelcome(false)}
+                className="font-heading text-sm tracking-widest px-6 py-3 border border-[#8B0000] text-[#e0d8d0] hover:bg-[#8B0000] transition-all duration-300"
+              >
+                ПОЕХАЛИ
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
